@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Tarif Asistanı" />
+  <meta name="theme-color" content="#128C7E" />
+  <title>Tarif Asistanı</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: -apple-system, 'Segoe UI', sans-serif; background: #ECE5DD; }
+    .phone { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; background: #ECE5DD; }
+    .wa-header { background: #128C7E; padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-top: max(10px, env(safe-area-inset-top)); }
+    .wa-avatar { width: 40px; height: 40px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .wa-name { color: #fff; font-size: 16px; font-weight: 600; }
+    .wa-status { color: rgba(255,255,255,0.75); font-size: 12px; }
+    .wa-icons { margin-left: auto; display: flex; gap: 18px; }
+    .wa-icons span { color: rgba(255,255,255,0.85); font-size: 22px; cursor: pointer; }
+    .chat-area { flex: 1; overflow-y: auto; padding: 10px 10px 6px; display: flex; flex-direction: column; gap: 6px; -webkit-overflow-scrolling: touch; }
+    .brow { display: flex; }
+    .brow.L { justify-content: flex-start; }
+    .brow.R { justify-content: flex-end; }
+    .bbl { max-width: 82%; padding: 8px 10px 4px; border-radius: 12px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+    .bbl.L { background: #fff; border-top-left-radius: 2px; color: #111; }
+    .bbl.R { background: #DCF8C6; border-top-right-radius: 2px; color: #111; }
+    .bt { font-size: 11px; color: rgba(0,0,0,0.4); text-align: right; margin-top: 3px; }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #999; animation: bounce 1.2s infinite; margin: 0 2px; }
+    .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+    .rcard { background: #fff; border-radius: 10px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.08); }
+    .rhead { background: #128C7E; padding: 10px 13px; color: #fff; font-size: 15px; font-weight: 600; }
+    .rhead small { font-weight: 400; font-size: 12px; opacity: 0.85; }
+    .rbody { padding: 10px 13px; font-size: 13.5px; line-height: 1.6; color: #222; }
+    .rsec { margin-bottom: 10px; }
+    .rsec strong { display: block; font-weight: 600; color: #128C7E; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .rlist { padding-left: 18px; }
+    .rlist li { margin-bottom: 3px; }
+    .ripucu { background: #E8F5E0; border-radius: 8px; padding: 8px 11px; font-size: 12.5px; color: #2d6a10; margin-top: 4px; }
+    .date-sep { text-align: center; margin: 4px 0; }
+    .date-sep span { background: rgba(225,214,200,0.9); color: #555; font-size: 11px; padding: 3px 10px; border-radius: 99px; }
+    .sugg { display: flex; gap: 6px; padding: 6px 10px; background: #F0F0F0; overflow-x: auto; flex-shrink: 0; }
+    .sugg::-webkit-scrollbar { display: none; }
+    .chip { background: #fff; border: 0.5px solid #ccc; border-radius: 99px; padding: 5px 13px; font-size: 13px; color: #444; cursor: pointer; white-space: nowrap; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+    .chip:active { background: #DCF8C6; }
+    .wa-bar { padding: 6px 8px; background: #F0F0F0; display: flex; align-items: flex-end; gap: 8px; flex-shrink: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .wa-inner { flex: 1; background: #fff; border-radius: 24px; display: flex; align-items: flex-end; gap: 6px; padding: 8px 14px; }
+    .wa-inner textarea { flex: 1; border: none; outline: none; background: transparent; font-size: 15px; line-height: 1.4; resize: none; max-height: 100px; font-family: inherit; color: #111; }
+    .wa-inner textarea::placeholder { color: #aaa; }
+    .abtn { width: 46px; height: 46px; border-radius: 50%; background: #128C7E; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; -webkit-tap-highlight-color: transparent; transition: transform 0.1s; }
+    .abtn:active { transform: scale(0.93); }
+    .abtn.rec { background: #E24B4A; animation: pulse 1s infinite; }
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+    .abtn svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .err-box { background: #FDECEA; border-radius: 8px; padding: 8px 11px; font-size: 13px; color: #A32D2D; }
+    .audio-bbl { display: flex; align-items: center; gap: 8px; padding: 4px 2px; min-width: 160px; }
+    .aplay { width: 34px; height: 34px; border-radius: 50%; background: #128C7E; border: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .aplay svg { width: 16px; height: 16px; fill: #fff; }
+    .awave { flex: 1; height: 24px; display: flex; align-items: center; gap: 2px; }
+    .awave span { display: inline-block; background: #128C7E; border-radius: 2px; width: 3px; opacity: 0.65; }
+    .adur { font-size: 11px; color: rgba(0,0,0,0.45); }
+  </style>
+</head>
+<body>
+<div class="phone">
+  <div class="wa-header">
+    <div class="wa-avatar">🍳</div>
+    <div>
+      <div class="wa-name">Tarif Asistanı</div>
+      <div class="wa-status" id="st">çevrimiçi</div>
+    </div>
+    <div class="wa-icons">
+      <span title="Arama">📞</span>
+      <span title="Menü">⋮</span>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chat">
+    <div class="date-sep"><span>Bugün</span></div>
+    <div class="brow L"><div class="bbl L">Merhaba! 👋 Ben tarif asistanınım. Elindeki malzemeleri yaz ya da sesli söyle, sana harika bir tarif önereyim! 🍽️<div class="bt">09:41</div></div></div>
+    <div class="brow L"><div class="bbl L">Örneğin: <em>"patates, soğan, yumurta"</em> ya da <em>"tavuk, sarımsak, domates"</em> gibi yazabilirsin.<div class="bt">09:41</div></div></div>
+  </div>
+
+  <div class="sugg">
+    <div class="chip" onclick="useChip('tavuk, sarımsak, domates, biber')">🍗 Tavuk+domates</div>
+    <div class="chip" onclick="useChip('patates, yumurta, soğan, zeytinyağı')">🥚 Patates+yumurta</div>
+    <div class="chip" onclick="useChip('makarna, peynir, tereyağı, süt')">🧀 Makarna+peynir</div>
+    <div class="chip" onclick="useChip('kıyma, soğan, domates, biber')">🥩 Kıyma+sebze</div>
+  </div>
+
+  <div class="wa-bar">
+    <div class="wa-inner">
+      <textarea id="inp" rows="1" placeholder="Malzemeleri yaz..." oninput="resize(this);toggleBtn()" onkeydown="onKey(event)"></textarea>
+    </div>
+    <button class="abtn" id="abtn" onclick="action()" aria-label="Gönder veya sesli kayıt">
+      <!-- mic icon default -->
+      <svg id="aico" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const SEND_SVG = `<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+const MIC_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`;
+const STOP_SVG = `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
+
+const chat = document.getElementById('chat');
+const inp = document.getElementById('inp');
+const abtn = document.getElementById('abtn');
+const aico = document.getElementById('aico');
+const st = document.getElementById('st');
+let isRec = false, recog = null;
+
+// API KEY — buraya kendi Anthropic API anahtarınızı girin
+const API_KEY = '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';
+
+function now() { return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
+function resize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+function toggleBtn() { aico.innerHTML = inp.value.trim() ? SEND_SVG : MIC_SVG; }
+function onKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(inp.value.trim())send(inp.value.trim());} }
+function useChip(t) { inp.value=t; resize(inp); toggleBtn(); inp.focus(); }
+function action() { inp.value.trim() ? send(inp.value.trim()) : toggleRec(); }
+
+function addMsg(html, side) {
+  const row = document.createElement('div');
+  row.className = 'brow ' + side;
+  const tick = side==='R' ? '✓✓ ' : '';
+  row.innerHTML = `<div class="bbl ${side}">${html}<div class="bt">${tick}${now()}</div></div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addAudio() {
+  const row = document.createElement('div');
+  row.className = 'brow R';
+  const h = [10,16,20,12,22,14,8,18,16,20,10,14,22,12,18];
+  const bars = h.map(x=>`<span style="height:${x}px"></span>`).join('');
+  row.innerHTML = `<div class="bbl R"><div class="audio-bbl"><button class="aplay"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><div class="awave">${bars}</div><span class="adur">0:03</span></div><div class="bt">✓✓ ${now()}</div></div>`;
+  chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className='brow L'; row.id='typ';
+  row.innerHTML=`<div class="bbl L" style="padding:10px 14px;"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+  chat.appendChild(row); chat.scrollTop=chat.scrollHeight;
+  st.textContent='yazıyor...';
+}
+function removeTyping() { const t=document.getElementById('typ'); if(t)t.remove(); st.textContent='çevrimiçi'; }
+
+async function send(text) {
+  inp.value=''; resize(inp); toggleBtn();
+  addMsg(text,'R');
+  showTyping();
+
+  const sys = `Sen Türkçe konuşan sevecen bir aile yemek tarifi asistanısın.
+Yanıtını SADECE geçerli JSON olarak ver. Başka hiçbir şey yazma.
+Format: {"yemek":"...","sure":"...","kisilik":"...","malzemeler":["..."],"adimlar":["1. ...","2. ..."],"ipucu":"..."}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key': API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({ model:'claude-sonnet-4-5-20251001', max_tokens:1000, system:sys, messages:[{role:'user',content:`Malzemelerim: ${text}`}] })
+    });
+    if(!res.ok) throw new Error(`Sunucu hatası: ${res.status}`);
+    const data = await res.json();
+    const raw = data.content.map(i=>i.text||'').join('').trim();
+    const m = raw.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('Yanıt alınamadı');
+    const r = JSON.parse(m[0]);
+    removeTyping(); showRecipe(r);
+  } catch(e) {
+    removeTyping();
+    addMsg(`<div class="err-box">⚠️ ${e.message}</div>`,'L');
+  }
+}
+
+function showRecipe(r) {
+  const row = document.createElement('div');
+  row.className='brow L';
+  const ml=(r.malzemeler||[]).map(m=>`<li>${m}</li>`).join('');
+  const al=(r.adimlar||[]).map(a=>`<li>${a}</li>`).join('');
+  const ip=r.ipucu?`<div class="ripucu">💡 <b>İpucu:</b> ${r.ipucu}</div>`:'';
+  row.innerHTML=`<div class="bbl L" style="padding:0;overflow:hidden;max-width:88%;"><div class="rcard"><div class="rhead">🍽️ ${r.yemek||'Tarif'} <small>· ${r.sure||''} · ${r.kisilik||'4 kişilik'}</small></div><div class="rbody"><div class="rsec"><strong>📝 Malzemeler</strong><ul class="rlist">${ml}</ul></div><div class="rsec"><strong>👩‍🍳 Yapılışı</strong><ol class="rlist">${al}</ol></div>${ip}</div></div><div class="bt" style="padding:2px 10px 5px;">${now()}</div></div>`;
+  chat.appendChild(row);
+  setTimeout(()=>addMsg('Afiyet olsun! 😊 Başka malzemelerin varsa yazabilirsin.','L'),700);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function toggleRec() { isRec ? stopRec() : startRec(); }
+function startRec() {
+  isRec=true; abtn.classList.add('rec'); aico.innerHTML=STOP_SVG; st.textContent='🔴 Dinleniyor...';
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    recog=new SR(); recog.lang='tr-TR'; recog.interimResults=false;
+    recog.onresult=(e)=>{ const t=e.results[0][0].transcript; stopRec(); addAudio(); setTimeout(()=>send(t),300); };
+    recog.onerror=(e)=>{ stopRec(); addMsg('Ses tanıma çalışmadı. Lütfen yazarak deneyin. 🙏','L'); };
+    recog.start();
+  } else {
+    setTimeout(()=>{ stopRec(); addMsg('Bu tarayıcı sesi desteklemiyor. Lütfen yazın. 🙏','L'); },1200);
+  }
+}
+function stopRec() {
+  isRec=false; if(recog){try{recog.stop();}catch(e){} recog=null;}
+  abtn.classList.remove('rec'); aico.innerHTML=inp.value.trim()?SEND_SVG:MIC_SVG; st.textContent='çevrimiçi';
+}
+</script>
+</body>
+</html>
